@@ -16,7 +16,7 @@ public class Grammar
     {
         List<Grammar> terminalGrammars = allGrammars.Where(g => IsTerminalOnly(g.Set.Item2)).ToList();
         HashSet<string> derivableNonTerminals = new HashSet<string>(terminalGrammars.Select(g => g.Set.Item1));
-        List<Grammar> derivableGrammars = new List<Grammar>(terminalGrammars);
+        List<Grammar> derivableGrammars = new List<Grammar>();
         bool addedNew;
 
         do
@@ -37,7 +37,8 @@ public class Grammar
                 }
             }
         } while (addedNew);
-
+        
+        derivableGrammars.AddRange(terminalGrammars);
         return derivableGrammars;
     }
 

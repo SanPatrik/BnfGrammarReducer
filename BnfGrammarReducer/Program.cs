@@ -27,7 +27,7 @@ class Program
             var nT = Grammar.FilterDerivableGrammars(grammars);
             var vD = Grammar.FilterReachableGrammars(nT, startSymbol);
 
-            Parser.WriteFormattedGrammar(outputFilePath, vD);
+            Parser.WriteFormattedGrammar(outputFilePath, grammars, vD);
         }
         catch (Exception ex)
         {

@@ -26,29 +26,27 @@ public class Parser
         return grammars;
     }
     
-    public static void WriteFormattedGrammar(string filePath, List<Grammar> grammars)
+    public static void WriteFormattedGrammar(string filePath, List<Grammar> originalGrammars, List<Grammar> filteredGrammars)
     {
-        if (grammars.Count == 0)
+        if (filteredGrammars.Count == 0)
         {
             File.WriteAllText(filePath, EmptyLanguage);
             return;
         }
 
-        var grammarGroups = grammars
+        var grammarGroups = filteredGrammars
             .GroupBy(g => g.Set.Item1)
-            .ToDictionary(group => group.Key, group => group.Select(g => g.Set.Item2).ToList());
+            .ToDictionary(group => group.Key, group => group.ToList());
 
         using (var writer = new StreamWriter(filePath))
         {
-            foreach (var grammar in grammars)
+            foreach (var originalGrammar in originalGrammars)
             {
-                if (grammarGroups.TryGetValue(grammar.Set.Item1, out List<string> productions))
+                if (grammarGroups.TryGetValue(originalGrammar.Set.Item1, out var groupedGrammars))
                 {
-                    if (productions != null)
-                    {
-                        writer.WriteLine($"{grammar.Set.Item1} ::= {string.Join(" | ", productions.Distinct())}");
-                        grammarGroups.Remove(grammar.Set.Item1);
-                    }
+                    string combinedProductions = string.Join(" | ", groupedGrammars.Select(g => g.Set.Item2).Distinct());
+                    writer.WriteLine($"{originalGrammar.Set.Item1} ::= {combinedProductions}");
+                    grammarGroups.Remove(originalGrammar.Set.Item1);
                 }
             }
         }
